@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Penambangan Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+    header {
+      background: #333;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav ul {
+      background: #444;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      text-align: center;
+    }
+    nav ul li {
+      display: inline;
+      padding: 15px;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+    }
+    nav ul li a:hover {
+      background: #555;
+    }
+    section {
+      padding: 20px;
+      margin: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #333;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+ <h1 style="margin: 0;">Data Mining</h1>
+ <h1><img src="logo pv.png" alt="Logo" style="position: absolute; top: 10px; left: 10px; height: 80px;"></h1>
+</header>
+    <h1>Data Mining</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#datamining">Data Mining</a></li>
+      <li><a href="#profiling">Profiling Data</a></li>
+      <li><a href="#visualisasi">Visualisasi Data</a></li>
+      <li><a href="#understanding">Data Understanding</a></li>
+      <li><a href="#outlier">Deteksi Outlier</a></li>
+      <li><a href="#kmeans">K-Means</a></li>
+    </ul>
+  </nav>
+
+  <section id="profil">
+    <h2>Profil Pembuat</h2>
+    <p><strong>Nama:</strong> M Bihar Siddiq</p>
+    <p><strong>NIM:</strong> 210411100167</p>
+  </section>
+
+  <section id="datamining">
+    <h2>1. Data Mining</h2>
+    <p>Data mining adalah proses pengumpulan dan pengolahan data yang bertujuan untuk mengekstrak informasi penting pada data.</p>
+    <p>Proses ini dilakukan menggunakan perangkat lunak dengan bantuan perhitungan statistika, matematika, atau teknologi Artificial Intelligence (AI). Data mining sering disebut juga sebagai Knowledge Discovery in Database (KDD).</p>
+  </section>
+
+  <section id="profiling">
+    <h2>2. Profiling Data Statistik Deskriptif</h2>
+    <p>Profiling data bertujuan untuk memahami karakteristik dataset, termasuk distribusi data dan nilai statistiknya.</p>
+    <pre>
+import pandas as pd
+df = pd.read_csv("data.csv")
+print(df.describe())
+print(df.info())
+    </pre>
+  </section>
+
+  <section id="visualisasi">
+    <h2>3. Visualisasi Data</h2>
+    <p>Visualisasi membantu memahami pola dan distribusi data dengan lebih baik.</p>
+    <pre>
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.histplot(df['kolom_numerik'], bins=30, kde=True)
+plt.show()
+    </pre>
+  </section>
+
+  <section id="understanding">
+    <h2>4. Data Understanding</h2>
+    <p>Menganalisis tipe data yang digunakan dalam dataset.</p>
+    <pre>
+print(df.dtypes)
+df['kategori'] = df['kategori'].astype('category')
+df['tanggal'] = pd.to_datetime(df['tanggal'])
+    </pre>
+  </section>
+
+  <section id="outlier">
+    <h2>5. Deteksi Outlier dengan KNN</h2>
+    <p>KNN dapat digunakan untuk mendeteksi outlier berdasarkan jarak antara titik data.</p>
+    <pre>
+from sklearn.neighbors import NearestNeighbors
+import numpy as np
+
+df_numeric = df.select_dtypes(include=[np.number])
+k = 5
+nbrs = NearestNeighbors(n_neighbors=k).fit(df_numeric)
+distances, indices = nbrs.kneighbors(df_numeric)
+
+outlier_scores = distances.mean(axis=1)
+threshold = np.percentile(outlier_scores, 95)
+df['outlier'] = outlier_scores > threshold
+    </pre>
+  </section>
+
+  <section id="kmeans">
+    <h2>6. K-Means Clustering</h2>
+    <p>K-Means adalah algoritma pengelompokan berbasis centroid yang mempartisi data menjadi beberapa kelompok berdasarkan jarak antar centroid.</p>
+    <pre>
+from sklearn.datasets import load_iris
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score, accuracy_score
+from scipy.stats import mode
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load data iris
+iris = load_iris()
+X = iris.data
+y_true = iris.target
+
+sse = []
+silhouette_scores = []
+accuracy_scores = []
+k_range = range(2, 5)
+
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+
+    sse.append(kmeans.inertia_)
+    sil_score = silhouette_score(X, kmeans.labels_)
+    silhouette_scores.append(sil_score)
+
+    labels = np.zeros_like(kmeans.labels_)
+    for i in range(k):
+        mask = (kmeans.labels_ == i)
+        labels[mask] = mode(y_true[mask], keepdims=True).mode[0]
+
+    acc = accuracy_score(y_true, labels)
+    accuracy_scores.append(acc)
+
+    print(f"Jumlah Klaster: {k}")
+    print(f"  - SSE: {kmeans.inertia_:.2f}")
+    print(f"  - Silhouette Score: {sil_score:.4f}")
+    print(f"  - Akurasi: {acc:.4f}")
+    print("-" * 50)
+
+# Plot
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plt.plot(k_range, sse, marker='o')
+plt.title('SSE vs Jumlah Klaster')
+plt.xlabel('Jumlah Klaster')
+plt.ylabel('SSE')
+
+plt.subplot(1, 2, 2)
+plt.plot(k_range, silhouette_scores, marker='o', color='orange')
+plt.title('Silhouette Score vs Jumlah Klaster')
+plt.xlabel('Jumlah Klaster')
+plt.ylabel('Silhouette Score')
+
+plt.tight_layout()
+plt.show()
+    </pre>
+    <img src="download.png" alt="Grafik K-Means">
+  </section> 
+
+        <h2>Instalasi</h2>
+        <p>untuk menggunakan metode fuzzy-c-means kita bisa menggunakan perintah berikut:</p>
+        <pre><code>!pip install -q pandas scikit-learn openpyxl
+          from google.colab import files
+          uploaded = files.upload()
+        </code></pre>
+    </section>
+&nbsp;
+&nbsp;
+    </section>
+&nbsp;
+&nbsp;
+
+    <section id="fuzzy-c-means">
+        <h2>Fuzzy C-Means Algorithm</h2>
+        <p>The Fuzzy C-Means algorithm can be defined as follows:</p>
+        <pre><code>
+def fuzzy_c_means(X, n_clusters=2, m=2, max_iter=100, error=1e-5):
+    n_samples = X.shape[0]
+    U = np.random.dirichlet(np.ones(n_clusters), size=n_samples)
+&nbsp;
+&nbsp;
+
+    for iteration in range(max_iter):
+        U_old = U.copy()
+        centers = np.dot(U.T ** m, X) / np.sum(U.T ** m, axis=1, keepdims=True)
+&nbsp;
+&nbsp;
+
+        for i in range(n_samples):
+            for j in range(n_clusters):
+                denominator = sum(
+                    (np.linalg.norm(X[i] - centers[j]) / np.linalg.norm(X[i] - centers[k])) ** (2 / (m - 1))
+                    for k in range(n_clusters)
+                )
+                U[i, j] = 1 / denominator
+&nbsp;
+&nbsp;
+
+        if np.linalg.norm(U - U_old) < error:
+            break
+&nbsp;
+&nbsp;
+
+    return centers, U
+        </code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <section id="results">
+        <h2>Hasil</h2>
+        <p>Setelah menjalankan algoritma Fuzzy C-Means, pusat dari cluster adalah:</p>
+        <pre><code>
+Pusat Cluster (dalam bentuk data ternormalisasi):
+Cluster 1: [0.91465179 0.91465179]
+Cluster 2: [0.16101718 0.16101718]
+        </code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <footer>
+        <p>&copy; 2023 Fuzzy C-Means Clustering</p>
+    </footer>
+  </body>
+</body>
+</html>

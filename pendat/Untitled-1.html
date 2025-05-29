@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuzzy C-Means Clustering</title>
+    <link rel="stylesheet" href="styles.css">
+    body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+&nbsp;
+&nbsp;
+
+header {
+    background: #007BFF;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+&nbsp;
+&nbsp;
+
+h1, h2 {
+    margin: 20px 0;
+}
+&nbsp;
+&nbsp;
+
+section {
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+&nbsp;
+&nbsp;
+
+pre {
+    background: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+&nbsp;
+&nbsp;
+
+footer {
+    text-align: center;
+    padding: 10px 0;
+    background: #f4f4f4;
+}
+</head>
+<body>
+    <header>
+        <h1>Fuzzy C-Means Clustering</h1>
+    </header>
+&nbsp;
+&nbsp;
+
+    <section id="installation">
+        <h2>Installation</h2>
+        <p>To install the required libraries, run the following command:</p>
+        <pre><code>!pip install -q pandas scikit-learn openpyxl</code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <section id="upload">
+        <h2>Upload Excel File</h2>
+        <p>Upload your Excel file using the following code:</p>
+        <pre><code>from google.colab import files
+uploaded = files.upload()</code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <section id="fuzzy-c-means">
+        <h2>Fuzzy C-Means Algorithm</h2>
+        <p>The Fuzzy C-Means algorithm can be defined as follows:</p>
+        <pre><code>
+def fuzzy_c_means(X, n_clusters=2, m=2, max_iter=100, error=1e-5):
+    n_samples = X.shape[0]
+    U = np.random.dirichlet(np.ones(n_clusters), size=n_samples)
+&nbsp;
+&nbsp;
+
+    for iteration in range(max_iter):
+        U_old = U.copy()
+        centers = np.dot(U.T ** m, X) / np.sum(U.T ** m, axis=1, keepdims=True)
+&nbsp;
+&nbsp;
+
+        for i in range(n_samples):
+            for j in range(n_clusters):
+                denominator = sum(
+                    (np.linalg.norm(X[i] - centers[j]) / np.linalg.norm(X[i] - centers[k])) ** (2 / (m - 1))
+                    for k in range(n_clusters)
+                )
+                U[i, j] = 1 / denominator
+&nbsp;
+&nbsp;
+
+        if np.linalg.norm(U - U_old) < error:
+            break
+&nbsp;
+&nbsp;
+
+    return centers, U
+        </code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <section id="results">
+        <h2>Results</h2>
+        <p>After running the Fuzzy C-Means algorithm, the cluster centers are:</p>
+        <pre><code>
+Pusat Cluster (dalam bentuk data ternormalisasi):
+Cluster 1: [0.91465179 0.91465179]
+Cluster 2: [0.16101718 0.16101718]
+        </code></pre>
+    </section>
+&nbsp;
+&nbsp;
+
+    <footer>
+        <p>&copy; 2023 Fuzzy C-Means Clustering</p>
+    </footer>
+</body>
+</html>
